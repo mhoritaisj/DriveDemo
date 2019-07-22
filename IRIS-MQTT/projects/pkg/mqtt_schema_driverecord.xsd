@@ -1,0 +1,56 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="message">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element type="xs:string" name="type"/>
+        <xs:element type="xs:dateTime" name="timestamp"/>
+        <xs:element name="content">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="DriveRecord">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="starttime"/>
+                    <xs:element type="xs:double" name="time"/>
+                    <xs:element type="xs:double" name="longitude"/>
+                    <xs:element type="xs:double" name="latitude"/>
+                    <xs:element type="xs:double" name="accuracy"/>
+                    <xs:element type="xs:double" name="height"/>
+                    <xs:element type="xs:double" name="azimuth"/>
+                    <xs:element type="xs:double" name="rscp"/>
+                    <xs:element type="xs:double" name="ecio"/>
+                    <xs:element type="xs:double" name="car_speed"/>
+                    <xs:element type="xs:double" name="engine_rpm"/>
+                    <xs:element type="xs:double" name="accel_pos"/>
+                    <xs:element type="xs:double" name="engine_cool_temp"/>
+                    <xs:element type="xs:double" name="brake_sw"/>
+                    <xs:element type="xs:double" name="accum_dist"/>
+                    <xs:element type="xs:double" name="accum_fuel"/>
+                    <xs:element type="xs:double" name="battery_voltage"/>
+                    <xs:element type="xs:double" name="fuel_cost"/>
+                    <xs:element type="xs:double" name="fuel_injection"/>
+                    <xs:element type="xs:double" name="a_000_x"/>
+                    <xs:element type="xs:double" name="a_000_y"/>
+                    <xs:element type="xs:double" name="a_000_z"/>
+                    <xs:element type="xs:double" name="a_200_x"/>
+                    <xs:element type="xs:double" name="a_200_y"/>
+                    <xs:element type="xs:double" name="a_200_z"/>
+                    <xs:element type="xs:double" name="a_400_x"/>
+                    <xs:element type="xs:double" name="a_400_y"/>
+                    <xs:element type="xs:double" name="a_400_z"/>
+                    <xs:element type="xs:double" name="a_600_x"/>
+                    <xs:element type="xs:double" name="a_600_y"/>
+                    <xs:element type="xs:double" name="a_600_z"/>
+                    <xs:element type="xs:double" name="a_800_x"/>
+                    <xs:element type="xs:double" name="a_800_y"/>
+                    <xs:element type="xs:double" name="a_800_z"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

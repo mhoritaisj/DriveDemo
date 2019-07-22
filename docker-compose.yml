@@ -1,0 +1,57 @@
+version: '2.4'
+
+volumes:
+  common_shared:
+
+services:
+
+  irisdriveservice:
+    environment:
+    - LANG=ja_JP.UTF8
+    - LANGUAGE=ja_JP:ja
+    - LC_ALL=ja_JP.UTF-8
+    - TZ=JST-9
+    # - ISC_DATA_DIRECTORY=/shared/iris
+    build: 
+      context: ./IRIS-MQTT
+    #  args:
+    #  - IRIS_PROJECT_FOLDER_NAME=bankingtrnsrv-atelier-project
+    image: iris-jdk8
+    container_name: iris-drive-demo
+    #command: --key /irislicense/iris.key
+    hostname: irisdriveservice
+    restart: on-failure
+    ports:
+    # 51773 is the superserver default port
+    - "51003:51773"
+    # 52773 is the webserver/management portal port
+    - "52003:52773"
+    volumes:
+    - ${PWD}/IRIS-MQTT/projects:/projects
+                                             
+    networks:
+    - mqttnw
+
+  mqttbroker:
+    #build: 
+    #  context: ./MQTTBroker
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    hostname: mqttbroker
+    restart: on-failure
+    expose:
+    - 1883
+    - 9001
+    ports:
+    - 1883:1883
+    - 9001:9001
+    volumes:
+    - ${PWD}/MQTTBroker/conf:/mosquitto/config
+    - ${PWD}/MQTTBroker/data:/mosquitto/data
+    - ${PWD}/MQTTBroker/log:/mosquitto/log
+    networks:
+    - mqttnw
+
+networks:
+  mqttnw:
+    driver: bridge
