@@ -1,4 +1,5 @@
 
+IRIS-MQTT/projects/logs/
 MQTTBroker/data/mosquitto.db
 MQTTBroker/log/mosquitto.log
 DataGenerator/data/drivedataorg.csv
