@@ -34,8 +34,8 @@ services:
     - 9001:9001
     volumes:
     - ${PWD}/MQTTBroker/conf:/mosquitto/config
-    - ${PWD}/MQTTBroker/data:/mosquitto/data
-    - ${PWD}/MQTTBroker/log:/mosquitto/log
+    #- ${PWD}/MQTTBroker/data:/mosquitto/data
+    #- ${PWD}/MQTTBroker/log:/mosquitto/log
     networks:
     - mqttnw
 
