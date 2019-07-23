@@ -6,25 +6,12 @@ volumes:
 services:
 
   irisdriveservice:
-    environment:
-    - LANG=ja_JP.UTF8
-    - LANGUAGE=ja_JP:ja
-    #- LC_ALL=ja_JP.UTF-8
-    - TZ=JST-9
-    # - ISC_DATA_DIRECTORY=/shared/iris
-    build: 
-      context: ./IRIS-MQTT
-    #  args:
-    #  - IRIS_PROJECT_FOLDER_NAME=bankingtrnsrv-atelier-project
-    image: iris-jdk8
+    image: mhorita/iris-drive-demo
     container_name: iris-drive-demo
-    #command: --key /irislicense/iris.key
     hostname: irisdriveservice
     restart: on-failure
     ports:
-    # 51773 is the superserver default port
     - "51003:51773"
-    # 52773 is the webserver/management portal port
     - "52003:52773"
     volumes:
     - ${PWD}/IRIS-MQTT/projects:/projects

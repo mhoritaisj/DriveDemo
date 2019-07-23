@@ -1,4 +1,4 @@
-Class DriveDemo.VDocToStringContainer Extends Ens.DataTransformDTL [ DependsOn = (EnsLib.EDI.XML.Document, DriveDemo.Request.CarUpdateRequest) ]
+Class DriveDemo.VDocToCarUpdateRequest Extends Ens.DataTransformDTL [ DependsOn = (EnsLib.EDI.XML.Document, DriveDemo.Request.CarUpdateRequest) ]
 {
 
 Parameter IGNOREMISSINGSOURCE = 1;
