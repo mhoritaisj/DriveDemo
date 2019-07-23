@@ -15,11 +15,11 @@ import com.intersystems.gateway.bh.BusinessService;
 import com.intersystems.gateway.bh.Production;
 import com.intersystems.gateway.bh.Production.Severity;
 
-//Use or operation of this code is subject to acceptance of the license
-//available in the code repository for this code.
 //
-//Defines a business service to be used as part of the InterSystems IRIS 2018.1.1 
-//First Look: Connecting Systems in InterSystems IRIS Using Java Business Hosts
+//DISCLAIMER HERE!!!
+//
+
+//ビジネスサービスを実装
 
 
 public class MqttBS implements BusinessService, MqttCallback {
