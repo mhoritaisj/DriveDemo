@@ -17,8 +17,8 @@ XData RuleDefinition [ XMLNamespace = "http://www.intersystems.com/rule" ]
 <send transform="DriveDemo.VDocToCarRegisterRequest" target="CarOperation"></send>
 </when>
 <when condition="Piece(Document.{type},&quot;/&quot;,3,3)=&quot;drive&quot;">
+<send transform="DriveDemo.VDocToCarUpdateRequest" target="CarOperation"></send>
 <send transform="DriveDemo.VDocToCheckDriveRequest" target="CheckDriveProcess"></send>
-<send transform="DriveDemo.VDocToStringContainer" target="CarOperation"></send>
 </when>
 </rule>
 </ruleSet>
