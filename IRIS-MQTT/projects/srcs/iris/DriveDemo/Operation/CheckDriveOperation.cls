@@ -22,13 +22,37 @@ Method CheckDrive(pRequest As DriveDemo.Request.CheckDriveRequest, Output pRespo
     &sql(SELECT AVG(speed) into :tAvgSpeed FROM DriveDemo_Data.DriveRecord WHERE CarId = :tCarId and RelativeTm BETWEEN :tRelTm - 5 AND :tRelTm)
     $$$TRACE("Car ID: "_tCarId_", Average Speed: "_tAvgSpeed)
 
-    &sql(SELECT EngineRPM into :tEngineRPM FROM DriveDemo_Data.DriveRecord WHERE CarId = :tCarId and RelativeTm = :tRelTm)
-    $$$TRACE("Car ID: "_tCarId_", RPM: "_$g(tEngineRPM))   
-    if (SQLCODE = 0) & (+$g(tEngineRPM) > 3000) {
-        Set pResponse.hasEvent = 1
-        Set pResponse.DrivingBehavior.IsHighEngineRPM = 1
-        Set pResponse.MessageText = "エンジン高回転: "_tEngineRPM_", Car ID: "_pRequest.CarId
+    &sql(SELECT EngineRPM, aX, aY into :tEngineRPM, :taX, :taY FROM DriveDemo_Data.DriveRecord WHERE CarId = :tCarId and RelativeTm = :tRelTm)
+    $$$TRACE("Car ID: "_tCarId_", RPM: "_$g(tEngineRPM)) 
+    
+    Set tMsgTxt = ""
+    Set tDlm = ""
+    if SQLCODE = 0 {
+        if +$g(tEngineRPM) > 3000 {
+            Set pResponse.hasEvent = 1
+            Set pResponse.DrivingBehavior.IsHighEngineRPM = 1
+            Set tMsgTxt = tMsgTxt_tDlm_"エンジン回転数: "_tEngineRPM_" rpm"
+            Set tDlm = " , "
+        }
+        if $zabs(+$g(taX)) > 300 {
+            Set pResponse.hasEvent = 1
+            Set pResponse.DrivingBehavior.IsHighXG = 1
+            Set tMsgTxt = tMsgTxt_tDlm_"前後加速度: "_(taX / 1000.0)_" G"
+            Set tDlm = " , "
+        }
+        if $zabs(+$g(taY)) > 200 {
+            Set pResponse.hasEvent = 1
+            Set pResponse.DrivingBehavior.IsHighYG = 1
+            Set tMsgTxt = tMsgTxt_tDlm_"左右加速度: "_(taY / 1000.0)_" G"
+            Set tDlm = " , "
+        }
+
+        if pResponse.hasEvent = 1 {
+            Set tMsgTxt = tMsgTxt_tDlm_"Car ID: "_pRequest.CarId
+        }
     }
+
+    Set pResponse.MessageText = tMsgTxt
  
 
     Quit $$$OK

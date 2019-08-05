@@ -27,6 +27,7 @@
     "/cars": {
       "get": {
         "description": "すべての車の情報を返す",
+        "operationId": "getAllCars",
         "produces": [
           "application/json"
         ],
