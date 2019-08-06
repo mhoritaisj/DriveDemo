@@ -6,7 +6,7 @@ volumes:
 services:
 
   irisdriveservice:
-    image: mhorita/iris-drive-demo
+    image: mhorita/iris-drive-demo:latest
     container_name: iris-drive-demo
     hostname: irisdriveservice
     restart: on-failure

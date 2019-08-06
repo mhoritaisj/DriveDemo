@@ -17,7 +17,7 @@ XData OpenAPI [ MimeType = application/json ]
       "name":"MIT"
     }
   },
-  "basePath":"/api",
+  "basePath":"/csp/DriveDemo",
   "schemes":[
     "http"
   ],

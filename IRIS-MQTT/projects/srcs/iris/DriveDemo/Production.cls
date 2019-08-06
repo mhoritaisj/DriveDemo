@@ -12,18 +12,25 @@ XData ProductionDefinition
   <Item Name="RoutingProcess" Category="" ClassName="EnsLib.MsgRouter.VDocRoutingEngine" PoolSize="5" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
     <Setting Target="Host" Name="BusinessRuleName">DriveDemo.DemoProcessRoutingRule</Setting>
   </Item>
-  <Item Name="MQTTIn" Category="" ClassName="JBH.Com.Intersystems.Drivedemo.MqttBS" PoolSize="0" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
-    <Setting Target="Host" Name="DocSchemaCategory">mqtt_schema_driverecord</Setting>
-    <Setting Target="Host" Name="MQTTBroker">tcp://mqttbroker:1883</Setting>
-    <Setting Target="Host" Name="MQTTClientName">InterSystemsIRIS</Setting>
-    <Setting Target="Host" Name="MQTTTopicRoot">DriveDemo/#</Setting>
-    <Setting Target="Host" Name="TargetConfigNames">RoutingProcess</Setting>
-  </Item>
   <Item Name="CarOperation" Category="" ClassName="DriveDemo.Operation.CarUpdateOperation" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
   </Item>
   <Item Name="CheckDriveOperation" Category="" ClassName="DriveDemo.Operation.CheckDriveOperation" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="true" Schedule="">
   </Item>
   <Item Name="CheckDriveProcess" Category="" ClassName="DriveDemo.Process.CheckDriveProcess" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+  </Item>
+  <Item Name="MQTTIn" Category="" ClassName="JBH.Com.Intersystems.Drivedemo.MqttBS" PoolSize="0" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+    <Setting Target="Host" Name="DocSchemaCategory">mqtt_schema_driverecord</Setting>
+    <Setting Target="Host" Name="MQTTBroker">tcp://mqttbroker:1883</Setting>
+    <Setting Target="Host" Name="MQTTClientName">IRISClient</Setting>
+    <Setting Target="Host" Name="MQTTTopicRoot">DriveDemo/#</Setting>
+    <Setting Target="Host" Name="TargetConfigNames">RoutingProcess</Setting>
+    <Setting Target="Host" Name="LogFile">/projects/logs/MQTTBS.log</Setting>
+  </Item>
+  <Item Name="MQTTOut" Category="" ClassName="JBH.Com.Intersystems.Drivedemo.MqttBO" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+    <Setting Target="Host" Name="LogFile">/projects/logs/MQTTBO.log</Setting>
+    <Setting Target="Host" Name="MQTTBroker">tcp://mqttbroker:1883</Setting>
+    <Setting Target="Host" Name="MQTTClientName">IRISClientOut</Setting>
+    <Setting Target="Host" Name="MQTTTopicRoot">DriveDemo/Event</Setting>
   </Item>
 </Production>
 }
