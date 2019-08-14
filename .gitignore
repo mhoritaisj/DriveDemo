@@ -1,5 +1,6 @@
 
-IRIS-MQTT/projects/logs/
+IRIS-MQTT/projects/logs/*
+!.gitkeep
 MQTTBroker/data/mosquitto.db
 MQTTBroker/log/mosquitto.log
 WebServer/node_modules/
