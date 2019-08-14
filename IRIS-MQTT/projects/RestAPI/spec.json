@@ -1,43 +1,42 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "version": "1.0.0",
-    "title": "Drive Demo",
-    "description": "Drive Demo: REST APIの定義",
-    "termsOfService": "http://swagger.io/terms/",
-    "contact": {
-      "name": "Swagger API Team"
+  "swagger":"2.0",
+  "info":{
+    "version":"1.0.0",
+    "title":"Drive Demo",
+    "description":"Drive Demo: REST APIの定義",
+    "termsOfService":"http://swagger.io/terms/",
+    "contact":{
+      "name":"InterSystems Japan"
     },
-    "license": {
-      "name": "MIT"
+    "license":{
+      "name":"MIT"
     }
   },
-  "host": "localhost",
-  "basePath": "/csp/DriveDemo",
-  "schemes": [
+  "basePath":"/csp/DriveDemo",
+  "schemes":[
     "http"
   ],
-  "consumes": [
+  "consumes":[
     "application/json"
   ],
-  "produces": [
+  "produces":[
     "application/json"
   ],
-  "paths": {
-    "/cars": {
-      "get": {
-        "description": "すべての車の情報を返す",
-        "operationId": "getAllCars",
-        "produces": [
+  "paths":{
+    "/cars":{
+      "get":{
+        "description":"すべての車の情報を返す",
+        "operationId":"getAllCars",
+        "produces":[
           "application/json"
         ],
-        "responses": {
-          "200": {
-            "description": "車のリスト",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Car"
+        "responses":{
+          "200":{
+            "description":"車のリスト",
+            "schema":{
+              "type":"array",
+              "items":{
+                "$ref":"#/definitions/Car"
               }
             }
           }
@@ -45,10 +44,10 @@
       }
     }
   },
-  "definitions": {
-    "Car": {
-      "type": "object",
-      "required": [
+  "definitions":{
+    "Car":{
+      "type":"object",
+      "required":[
         "carid",
         "relativetm",
         "longitude",
@@ -59,55 +58,55 @@
         "accelpos",
         "brakesw"
       ],
-      "properties": {
-        "carid": {
-          "type": "string"
+      "properties":{
+        "carid":{
+          "type":"string"
         },
-        "relativetm": {
-          "type": "number",
-          "format": "int32"
+        "relativetm":{
+          "type":"number",
+          "format":"int32"
         },
-        "longitude": {
-          "type": "number",
-          "format": "float"
+        "longitude":{
+          "type":"number",
+          "format":"float"
         },
-        "latitude": {
-          "type": "number",
-          "format": "float"
+        "latitude":{
+          "type":"number",
+          "format":"float"
         },
-        "azimuth": {
-          "type": "number",
-          "format": "float"
+        "azimuth":{
+          "type":"number",
+          "format":"float"
         },
-        "speed": {
-          "type": "number",
-          "format": "float"
+        "speed":{
+          "type":"number",
+          "format":"float"
         },
-        "enginerpm": {
-          "type": "number",
-          "format": "float"
+        "enginerpm":{
+          "type":"number",
+          "format":"float"
         },
-        "accelpos": {
-          "type": "number",
-          "format": "float"
+        "accelpos":{
+          "type":"number",
+          "format":"float"
         },
-        "brakesw": {
-          "type": "number",
-          "format": "float"
+        "brakesw":{
+          "type":"number",
+          "format":"float"
         },
-        "aX": {
-          "type": "number",
-          "format": "float"
+        "aX":{
+          "type":"number",
+          "format":"float"
         },
-        "aY": {
-          "type": "number",
-          "format": "float"
+        "aY":{
+          "type":"number",
+          "format":"float"
         },
-        "aZ": {
-          "type": "number",
-          "format": "float"
+        "aZ":{
+          "type":"number",
+          "format":"float"
         }
-     }
+      }
     }
   }
 }

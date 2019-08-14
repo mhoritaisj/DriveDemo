@@ -16,18 +16,23 @@ XData MessageMap
 </MapItems>
 }
 
+// 車のstartトッピックがきたら、そのCar IDに対しレコードを作成する
+
 Method RegisterCar(pRequest As DriveDemo.Request.CarRegisterRequest, Output pResponse As Ens.Response) As %Status
 {
     Set carid = pRequest.CarId
     Set ts = pRequest.StartTime
     $$$TRACE("Car ID: "_carid_",  Time: "_ts)
 
+    // デモ目的のため、以前の同一Car IDのレコードを削除する
     &sql(DELETE FROM DriveDemo_Data.DriveRecord where CarId = :carid)
     &sql(DELETE FROM DriveDemo_Data.CarLatest where CarId = :carid)
     &sql(INSERT INTO DriveDemo_Data.CarLatest (CarId, Tm) values (:carid, :ts))
     
     Quit $$$OK
 }
+
+// driveトピックのメッセージがきたら、最新情報テーブルを更新する
 
 Method UpdateCar(pRequest As DriveDemo.Request.CarUpdateRequest, Output pResponse As Ens.Response) As %Status
 {
@@ -53,17 +58,6 @@ Method UpdateCar(pRequest As DriveDemo.Request.CarUpdateRequest, Output pRespons
  
     $$$TRACE("Car ID: "_tCarId_",  Speed: "_tSpeed)
  
-    /*
-	If tFlag="R" {
-		If pRequest.Location["Error" Quit $$$ERROR($$$GeneralError,"User triggered error")
-		Set pResponse=##class(Ens.Response).%New()
-		Set pResponse.IsTooHigh=pRequest.WaterLevel>500
-		$$$TRACE("Registration of water level finished.")
-		Quit $$$OK
-	} Else {
-		Quit $$$EnsError($$$GeneralError,"User triggered error")
-    }
-    */
     Quit $$$OK
 }
 

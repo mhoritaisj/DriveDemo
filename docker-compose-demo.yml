@@ -17,7 +17,7 @@ services:
     - ${PWD}/IRIS-MQTT/projects:/projects
                                              
     networks:
-    - mqttnw
+    - drivedemonw
 
   mqttbroker:
     #build: 
@@ -37,9 +37,20 @@ services:
     #- ${PWD}/MQTTBroker/data:/mosquitto/data
     #- ${PWD}/MQTTBroker/log:/mosquitto/log
     networks:
-    - mqttnw
+    - drivedemonw
+
+  webserver:
+    build:
+      context: ./WebServer
+    container_name: webserver
+    expose:
+    - 49160
+    ports:
+    - 49160:8080
+    networks:
+    - drivedemonw
 
 networks:
-  mqttnw:
+  drivedemonw:
     driver: bridge
-    name: mqttnw
+    name: drivedemonw

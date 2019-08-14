@@ -1,6 +1,6 @@
 /// Drive Demo: REST APIの定義<br/>
 /// Business logic class defined by OpenAPI in DriveDemo.spec<br/>
-/// Updated Aug 6, 2019 15:21:49
+/// Updated Aug 6, 2019 17:14:18
 Class DriveDemo.impl Extends %REST.Impl [ ProcedureBlock ]
 {
 
@@ -10,11 +10,12 @@ Parameter ExposeServerExceptions = 0;
 /// すべての車の情報を返す
 ClassMethod getAllCars() As %DynamicObject
 {
+    // SQLで車の最新情報を取得し、DynamicObjectを生成する
     Set tArr = []
-    Set tRS = ##class(%SQL.Statement).%ExecDirect(,"SELECT CarId, RelativeTm, Longitude, Latitude, Azimuth, Speed, EngineRPM, AccelPos, BrakeSW, aX, aY, aZ FROM DriveDemo_Data.CarLatest")
+    Set tRS = ##class(%SQL.Statement).%ExecDirect(,"SELECT CarId, RelativeTm, Longitude, Latitude, Azimuth, Speed, EngineRPM, AccelPos, BrakeSW, aX, aY, aZ FROM DriveDemo_Data.CarLatest order by CarId")
     While tRS.%Next() {
         Do tArr.%Push({
-            "id":    (tRS.%Get("CarId")),
+            "carid":    (tRS.%Get("CarId")),
             "relativetm":    (tRS.%Get("RelativeTm")),
             "longitude":    (tRS.%Get("Longitude")),
             "latitude":    (tRS.%Get("Latitude")),
@@ -29,7 +30,6 @@ ClassMethod getAllCars() As %DynamicObject
         })
     }
     Do ..%SetStatusCode(200)
-    //Do ..%SetHeader(<name>,<value>)
     Quit tArr.%ToJSON()
 }
 

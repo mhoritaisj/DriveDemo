@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="IRIS" version="26" zv="IRIS for UNIX (Ubuntu Server LTS for x86-64 Containers) 2019.2 (Build 107U)" ts="2019-07-23 12:16:34">
+<Export generator="IRIS" version="26" zv="IRIS for UNIX (Ubuntu Server LTS for x86-64 Containers) 2019.2 (Build 107U)" ts="2019-08-14 10:50:12">
 <Class name="DriveDemo.Data.CarLatest">
 <Super>%Persistent</Super>
 <TimeChanged>65206,63715.091922</TimeChanged>
@@ -275,18 +275,22 @@
 
 <Class name="DriveDemo.Data.DrivingBehavior">
 <Super>%RegisteredObject</Super>
-<TimeChanged>65211,3016.337889</TimeChanged>
+<TimeChanged>65230,41303.341243</TimeChanged>
 <TimeCreated>65211,2888.716063</TimeCreated>
-
-<Property name="IsNormal">
-<Type>%Boolean</Type>
-</Property>
 
 <Property name="IsOverSpeed">
 <Type>%Boolean</Type>
 </Property>
 
 <Property name="IsHighEngineRPM">
+<Type>%Boolean</Type>
+</Property>
+
+<Property name="IsHighXG">
+<Type>%Boolean</Type>
+</Property>
+
+<Property name="IsHighYG">
 <Type>%Boolean</Type>
 </Property>
 </Class>
@@ -296,7 +300,7 @@
 <Description>
 </Description>
 <Super>Ens.Rule.Definition</Super>
-<TimeChanged>65217,44137.576849</TimeChanged>
+<TimeChanged>65230,41348.440009</TimeChanged>
 <TimeCreated>65126,38470.15954</TimeCreated>
 
 <Parameter name="RuleAssistClass">
@@ -317,8 +321,8 @@
 <send transform="DriveDemo.VDocToCarRegisterRequest" target="CarOperation"></send>
 </when>
 <when condition="Piece(Document.{type},&quot;/&quot;,3,3)=&quot;drive&quot;">
-<send transform="DriveDemo.VDocToCheckDriveRequest" target="CheckDriveProcess"></send>
 <send transform="DriveDemo.VDocToCarUpdateRequest" target="CarOperation"></send>
+<send transform="DriveDemo.VDocToCheckDriveRequest" target="CheckDriveProcess"></send>
 </when>
 </rule>
 </ruleSet>
@@ -332,7 +336,7 @@
 <ClassType/>
 <ProcedureBlock>1</ProcedureBlock>
 <Super>Ens.BusinessOperation</Super>
-<TimeChanged>65210,41845.162537</TimeChanged>
+<TimeChanged>65239,38739.115586</TimeChanged>
 <TimeCreated>65206,64643.489865</TimeCreated>
 
 <Parameter name="INVOCATION">
@@ -354,6 +358,13 @@
 ]]></Data>
 </XData>
 
+<UDLText name="T">
+<Content><![CDATA[
+// 車のstartトッピックがきたら、そのCar IDに対しレコードを作成する
+
+]]></Content>
+</UDLText>
+
 <Method name="RegisterCar">
 <FormalSpec>pRequest:DriveDemo.Request.CarRegisterRequest,*pResponse:Ens.Response</FormalSpec>
 <ReturnType>%Status</ReturnType>
@@ -362,6 +373,7 @@
     Set ts = pRequest.StartTime
     $$$TRACE("Car ID: "_carid_",  Time: "_ts)
 
+    // デモ目的のため、以前の同一Car IDのレコードを削除する
     &sql(DELETE FROM DriveDemo_Data.DriveRecord where CarId = :carid)
     &sql(DELETE FROM DriveDemo_Data.CarLatest where CarId = :carid)
     &sql(INSERT INTO DriveDemo_Data.CarLatest (CarId, Tm) values (:carid, :ts))
@@ -369,6 +381,13 @@
     Quit $$$OK
 ]]></Implementation>
 </Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+// driveトピックのメッセージがきたら、最新情報テーブルを更新する
+
+]]></Content>
+</UDLText>
 
 <Method name="UpdateCar">
 <FormalSpec>pRequest:DriveDemo.Request.CarUpdateRequest,*pResponse:Ens.Response</FormalSpec>
@@ -396,17 +415,6 @@
  
     $$$TRACE("Car ID: "_tCarId_",  Speed: "_tSpeed)
  
-    /*
-	If tFlag="R" {
-		If pRequest.Location["Error" Quit $$$ERROR($$$GeneralError,"User triggered error")
-		Set pResponse=##class(Ens.Response).%New()
-		Set pResponse.IsTooHigh=pRequest.WaterLevel>500
-		$$$TRACE("Registration of water level finished.")
-		Quit $$$OK
-	} Else {
-		Quit $$$EnsError($$$GeneralError,"User triggered error")
-    }
-    */
     Quit $$$OK
 ]]></Implementation>
 </Method>
@@ -417,7 +425,7 @@
 <ClassType/>
 <ProcedureBlock>1</ProcedureBlock>
 <Super>Ens.BusinessOperation</Super>
-<TimeChanged>65212,1298.735211</TimeChanged>
+<TimeChanged>65239,38307.031531</TimeChanged>
 <TimeCreated>65211,84649.666717</TimeCreated>
 
 <Parameter name="INVOCATION">
@@ -442,10 +450,49 @@
     Set pResponse.hasEvent = 0
     Set pResponse.DrivingBehavior = ##class(DriveDemo.Data.DrivingBehavior).%New()
 
+    Set tCarId = pRequest.CarId
     Set tRelTm = pRequest.RelativeTm
-    &sql(SELECT AVG(speed) into :tAvgSpeed FROM DriveDemo_Data.DriveRecord WHERE RelativeTm BETWEEN :tRelTm - 5 AND :tRelTm)
-    $$$TRACE("Car ID: "_pRequest.CarId_", Average Speed: "_tAvgSpeed)
+    &sql(SELECT AVG(speed) into :tAvgSpeed FROM DriveDemo_Data.DriveRecord WHERE CarId = :tCarId and RelativeTm BETWEEN :tRelTm - 5 AND :tRelTm)
+    $$$TRACE("Car ID: "_tCarId_", Average Speed: "_tAvgSpeed)
 
+    &sql(SELECT EngineRPM, aX, aY into :tEngineRPM, :taX, :taY FROM DriveDemo_Data.DriveRecord WHERE CarId = :tCarId and RelativeTm = :tRelTm)
+    $$$TRACE("Car ID: "_tCarId_", RPM: "_$g(tEngineRPM)) 
+    
+    Set tMsgTxt = ""
+    Set tDlm = ""
+    if SQLCODE = 0 {
+        if +$g(tAvgSpeed) > 100 {
+            Set pResponse.hasEvent = 1
+            Set pResponse.DrivingBehavior.IsOverSpeed = 1
+            Set tMsgTxt = tMsgTxt_tDlm_"Average Speed: "_$fnumber(tAvgSpeed, "", 2)_" km/h"
+            Set tDlm = " , "
+        }
+        if +$g(tEngineRPM) > 3000 {
+            Set pResponse.hasEvent = 1
+            Set pResponse.DrivingBehavior.IsHighEngineRPM = 1
+            Set tMsgTxt = tMsgTxt_tDlm_"Engine RPM: "_tEngineRPM_" rpm"
+            Set tDlm = " , "
+        }
+        if $zabs(+$g(taX)) > 300 {
+            Set pResponse.hasEvent = 1
+            Set pResponse.DrivingBehavior.IsHighXG = 1
+            Set tMsgTxt = tMsgTxt_tDlm_"X acceleration: "_$fnumber((taX / 1000.0), "+", 3)_" G"
+            Set tDlm = " , "
+        }
+        if $zabs(+$g(taY)) > 200 {
+            Set pResponse.hasEvent = 1
+            Set pResponse.DrivingBehavior.IsHighYG = 1
+            Set tMsgTxt = tMsgTxt_tDlm_"Y acceleration: "_$fnumber((taY / 1000.0), "+", 3)_" G"
+            Set tDlm = " , "
+        }
+
+        if pResponse.hasEvent = 1 {
+            Set tMsgTxt = tMsgTxt_tDlm_"Car ID: "_pRequest.CarId
+        }
+    }
+
+    Set pResponse.MessageText = tMsgTxt
+ 
 
     Quit $$$OK
 ]]></Implementation>
@@ -457,8 +504,12 @@
 <Description>
 </Description>
 <Super>Ens.BusinessProcessBPL</Super>
-<TimeChanged>65212,35.828245</TimeChanged>
+<TimeChanged>65230,41273.961225</TimeChanged>
 <TimeCreated>65211,85233.391281</TimeCreated>
+
+<Storage name="Default">
+<Type>%Storage.Persistent</Type>
+</Storage>
 
 <XData name="BPL">
 <Description>
@@ -466,29 +517,43 @@ BPL Definition</Description>
 <XMLNamespace>http://www.intersystems.com/bpl</XMLNamespace>
 <Data><![CDATA[
 <process language='objectscript' request='DriveDemo.Request.CheckDriveRequest' response='DriveDemo.Response.CheckDriveResponse' height='2000' width='2000' >
-<sequence xend='200' yend='350' >
+<context>
+<property name='drivingstatus' type='%String' instantiate='0' >
+<parameters>
+<parameter name='MAXLEN'  value='2500' />
+</parameters>
+</property>
+</context>
+<sequence xend='200' yend='700' >
 <call name='CheckDrivingBehavior' target='CheckDriveOperation' async='0' xpos='200' ypos='250' >
 <request type='DriveDemo.Request.CheckDriveRequest' >
 <assign property="callrequest" value="request" action="set" />
 </request>
 <response type='DriveDemo.Response.CheckDriveResponse' >
+<assign property="context.drivingstatus" value="callresponse.MessageText" action="set" />
 <assign property="response" value="callresponse" action="set" />
 </response>
 </call>
+<if name='EventHappened?' condition='response.hasEvent = 1' xpos='200' ypos='350' xend='200' yend='600' >
+<true>
+<call name='NotifyEvent' target='MQTTOut' async='1' xpos='335' ypos='500' >
+<request type='Ens.StringContainer' >
+<assign property="callrequest.StringValue" value="response.MessageText" action="set" />
+</request>
+<response type='Ens.Response' />
+</call>
+</true>
+</if>
 </sequence>
 </process>
 ]]></Data>
 </XData>
-
-<Storage name="Default">
-<Type>%Storage.Persistent</Type>
-</Storage>
 </Class>
 
 
 <Class name="DriveDemo.Production">
 <Super>Ens.Production</Super>
-<TimeChanged>65217,44020.302214</TimeChanged>
+<TimeChanged>65230,41182.740694</TimeChanged>
 <TimeCreated>65205,39772.533129</TimeCreated>
 
 <XData name="ProductionDefinition">
@@ -507,6 +572,20 @@ BPL Definition</Description>
   <Item Name="CheckDriveOperation" Category="" ClassName="DriveDemo.Operation.CheckDriveOperation" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="true" Schedule="">
   </Item>
   <Item Name="CheckDriveProcess" Category="" ClassName="DriveDemo.Process.CheckDriveProcess" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+  </Item>
+  <Item Name="MQTTIn" Category="" ClassName="JBH.Com.Intersystems.Drivedemo.MqttBS" PoolSize="0" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+    <Setting Target="Host" Name="DocSchemaCategory">mqtt_schema_driverecord</Setting>
+    <Setting Target="Host" Name="MQTTBroker">tcp://mqttbroker:1883</Setting>
+    <Setting Target="Host" Name="MQTTClientName">IRISClient</Setting>
+    <Setting Target="Host" Name="MQTTTopicRoot">DriveDemo/#</Setting>
+    <Setting Target="Host" Name="TargetConfigNames">RoutingProcess</Setting>
+    <Setting Target="Host" Name="LogFile">/projects/logs/MQTTBS.log</Setting>
+  </Item>
+  <Item Name="MQTTOut" Category="" ClassName="JBH.Com.Intersystems.Drivedemo.MqttBO" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+    <Setting Target="Host" Name="LogFile">/projects/logs/MQTTBO.log</Setting>
+    <Setting Target="Host" Name="MQTTBroker">tcp://mqttbroker:1883</Setting>
+    <Setting Target="Host" Name="MQTTClientName">IRISClientOut</Setting>
+    <Setting Target="Host" Name="MQTTTopicRoot">DriveDemo/Event</Setting>
   </Item>
 </Production>
 ]]></Data>
@@ -624,7 +703,7 @@ BPL Definition</Description>
 <ClassType>persistent</ClassType>
 <ProcedureBlock>1</ProcedureBlock>
 <Super>Ens.Response</Super>
-<TimeChanged>65211,84739.910432</TimeChanged>
+<TimeChanged>65230,41262.160342</TimeChanged>
 <TimeCreated>65211,84739.910432</TimeCreated>
 
 <Property name="hasEvent">
@@ -633,6 +712,11 @@ BPL Definition</Description>
 
 <Property name="DrivingBehavior">
 <Type>DriveDemo.Data.DrivingBehavior</Type>
+</Property>
+
+<Property name="MessageText">
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="32767"/>
 </Property>
 
 <Storage name="Default">
@@ -645,6 +729,9 @@ BPL Definition</Description>
 </Value>
 <Value name="2">
 <Value>DrivingBehavior</Value>
+</Value>
+<Value name="3">
+<Value>MessageText</Value>
 </Value>
 </Data>
 </Storage>
@@ -751,6 +838,192 @@ BPL Definition</Description>
 <assign value='..Piece(source.{type},"/",2)' property='target.CarId' action='set' />
 <assign value='source.{DriveRecord.time}' property='target.RelativeTm' action='set' />
 </transform>
+]]></Data>
+</XData>
+</Class>
+
+
+<Class name="DriveDemo.impl">
+<Description><![CDATA[
+Drive Demo: REST APIの定義<br/>
+Business logic class defined by OpenAPI in DriveDemo.spec<br/>
+Updated Aug 14, 2019 10:42:07]]></Description>
+<ProcedureBlock>1</ProcedureBlock>
+<Super>%REST.Impl</Super>
+<TimeChanged>65239,38527.220879</TimeChanged>
+<TimeCreated>65231,54546.756798</TimeCreated>
+
+<Parameter name="ExposeServerExceptions">
+<Description>
+If ExposeServerExceptions is true, then details of internal errors will be exposed.</Description>
+<Default>0</Default>
+</Parameter>
+
+<Method name="getAllCars">
+<Description>
+すべての車の情報を返す</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec/>
+<ReturnType>%DynamicObject</ReturnType>
+<Implementation><![CDATA[
+    // SQLで車の最新情報を取得し、DynamicObjectを生成する
+    Set tArr = []
+    Set tRS = ##class(%SQL.Statement).%ExecDirect(,"SELECT CarId, RelativeTm, Longitude, Latitude, Azimuth, Speed, EngineRPM, AccelPos, BrakeSW, aX, aY, aZ FROM DriveDemo_Data.CarLatest order by CarId")
+    While tRS.%Next() {
+        Do tArr.%Push({
+            "carid":    (tRS.%Get("CarId")),
+            "relativetm":    (tRS.%Get("RelativeTm")),
+            "longitude":    (tRS.%Get("Longitude")),
+            "latitude":    (tRS.%Get("Latitude")),
+            "azimuth":    (tRS.%Get("Azimuth")),
+            "speed":    (tRS.%Get("Speed")),
+            "enginerpm":    (tRS.%Get("EngineRPM")),
+            "accelpos":    (tRS.%Get("AccelPos")),
+            "brakesw":    (tRS.%Get("BrakeSW")),
+            "aX":    (tRS.%Get("aX")),
+            "aY":    (tRS.%Get("aY")),
+            "aZ":    (tRS.%Get("aZ"))
+        })
+    }
+    Do ..%SetStatusCode(200)
+    Quit tArr.%ToJSON()
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="DriveDemo.spec">
+<ProcedureBlock>1</ProcedureBlock>
+<Super>%REST.Spec</Super>
+<TimeChanged>65239,38527.186975</TimeChanged>
+<TimeCreated>65231,55309.425131</TimeCreated>
+
+<UDLText name="T">
+<Content><![CDATA[
+// CORSリクエストに対応する
+
+]]></Content>
+</UDLText>
+
+<Parameter name="HandleCorsRequest">
+<Default>1</Default>
+</Parameter>
+
+<XData name="OpenAPI">
+<MimeType>application/json</MimeType>
+<Data><![CDATA[
+{
+  "swagger":"2.0",
+  "info":{
+    "version":"1.0.0",
+    "title":"Drive Demo",
+    "description":"Drive Demo: REST APIの定義",
+    "termsOfService":"http://swagger.io/terms/",
+    "contact":{
+      "name":"InterSystems Japan"
+    },
+    "license":{
+      "name":"MIT"
+    }
+  },
+  "basePath":"/csp/DriveDemo",
+  "schemes":[
+    "http"
+  ],
+  "consumes":[
+    "application/json"
+  ],
+  "produces":[
+    "application/json"
+  ],
+  "paths":{
+    "/cars":{
+      "get":{
+        "description":"すべての車の情報を返す",
+        "operationId":"getAllCars",
+        "produces":[
+          "application/json"
+        ],
+        "responses":{
+          "200":{
+            "description":"車のリスト",
+            "schema":{
+              "type":"array",
+              "items":{
+                "$ref":"#/definitions/Car"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions":{
+    "Car":{
+      "type":"object",
+      "required":[
+        "carid",
+        "relativetm",
+        "longitude",
+        "latitude",
+        "azimuth",
+        "speed",
+        "enginerpm",
+        "accelpos",
+        "brakesw"
+      ],
+      "properties":{
+        "carid":{
+          "type":"string"
+        },
+        "relativetm":{
+          "type":"number",
+          "format":"int32"
+        },
+        "longitude":{
+          "type":"number",
+          "format":"float"
+        },
+        "latitude":{
+          "type":"number",
+          "format":"float"
+        },
+        "azimuth":{
+          "type":"number",
+          "format":"float"
+        },
+        "speed":{
+          "type":"number",
+          "format":"float"
+        },
+        "enginerpm":{
+          "type":"number",
+          "format":"float"
+        },
+        "accelpos":{
+          "type":"number",
+          "format":"float"
+        },
+        "brakesw":{
+          "type":"number",
+          "format":"float"
+        },
+        "aX":{
+          "type":"number",
+          "format":"float"
+        },
+        "aY":{
+          "type":"number",
+          "format":"float"
+        },
+        "aZ":{
+          "type":"number",
+          "format":"float"
+        }
+      }
+    }
+  }
+}
 ]]></Data>
 </XData>
 </Class>

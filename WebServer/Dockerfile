@@ -1,0 +1,24 @@
+FROM node:10
+
+# アプリケーションディレクトリを作成する
+WORKDIR /usr/src/app
+
+
+# アプリケーションの依存関係をインストールする
+# ワイルドカードを使用して、package.json と package-lock.json の両方が確実にコピーされるようにします。
+# 可能であれば (npm@5+)
+COPY package*.json ./
+
+RUN npm install
+# 本番用にコードを作成している場合
+# RUN npm install --only=production
+
+# アプリケーションのソースをバンドルする
+COPY server.js ./
+COPY main.html ./
+COPY apikey.txt ./
+
+RUN APIKEY=`cat apikey.txt` && sed -e "s/@@KEY@@/${APIKEY}/g" main.html > main-generated.html
+
+EXPOSE 8080
+ENTRYPOINT [ "node", "server.js" ]

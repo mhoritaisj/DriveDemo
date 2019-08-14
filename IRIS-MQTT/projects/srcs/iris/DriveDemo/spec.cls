@@ -1,6 +1,10 @@
 Class DriveDemo.spec Extends %REST.Spec [ ProcedureBlock ]
 {
 
+// CORSリクエストに対応する
+
+Parameter HandleCorsRequest = 1;
+
 XData OpenAPI [ MimeType = application/json ]
 {
 {
@@ -11,7 +15,7 @@ XData OpenAPI [ MimeType = application/json ]
     "description":"Drive Demo: REST APIの定義",
     "termsOfService":"http://swagger.io/terms/",
     "contact":{
-      "name":"Swagger API Team"
+      "name":"InterSystems Japan"
     },
     "license":{
       "name":"MIT"
@@ -53,14 +57,61 @@ XData OpenAPI [ MimeType = application/json ]
     "Car":{
       "type":"object",
       "required":[
-        "id",
-        "speed"
+        "carid",
+        "relativetm",
+        "longitude",
+        "latitude",
+        "azimuth",
+        "speed",
+        "enginerpm",
+        "accelpos",
+        "brakesw"
       ],
       "properties":{
-        "id":{
+        "carid":{
           "type":"string"
         },
-        "name":{
+        "relativetm":{
+          "type":"number",
+          "format":"int32"
+        },
+        "longitude":{
+          "type":"number",
+          "format":"float"
+        },
+        "latitude":{
+          "type":"number",
+          "format":"float"
+        },
+        "azimuth":{
+          "type":"number",
+          "format":"float"
+        },
+        "speed":{
+          "type":"number",
+          "format":"float"
+        },
+        "enginerpm":{
+          "type":"number",
+          "format":"float"
+        },
+        "accelpos":{
+          "type":"number",
+          "format":"float"
+        },
+        "brakesw":{
+          "type":"number",
+          "format":"float"
+        },
+        "aX":{
+          "type":"number",
+          "format":"float"
+        },
+        "aY":{
+          "type":"number",
+          "format":"float"
+        },
+        "aZ":{
           "type":"number",
           "format":"float"
         }

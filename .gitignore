@@ -2,4 +2,6 @@
 IRIS-MQTT/projects/logs/
 MQTTBroker/data/mosquitto.db
 MQTTBroker/log/mosquitto.log
-WebPage/
+WebClient/node_modules/
+WebClient/apikey.txt
+MQTTConsumer/
