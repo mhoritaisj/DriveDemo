@@ -14,7 +14,7 @@ services:
     - "51003:51773"
     - "52003:52773"
     volumes:
-    - ${PWD}/IRIS-MQTT/projects:/projects
+    - ./IRIS-MQTT/projects:/projects
                                              
     networks:
     - drivedemonw
@@ -33,7 +33,7 @@ services:
     - 1883:1883
     - 9001:9001
     volumes:
-    - ${PWD}/MQTTBroker/conf:/mosquitto/config
+    - ./MQTTBroker/conf:/mosquitto/config
     #- ${PWD}/MQTTBroker/data:/mosquitto/data
     #- ${PWD}/MQTTBroker/log:/mosquitto/log
     networks:
