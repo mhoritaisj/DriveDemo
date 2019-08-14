@@ -11,11 +11,15 @@
 <style>
 html { height: 100% }
 body { height: 100% }
-#map { height: 35%; width: 100%}
-#cartable { height: 50%; width: 100%}
+#map { height: 40%; width: 100%}
+#cartable { height: 45%; width: 100%}
 #eventtext { height: 15%; width: 100%; overflow: auto}
 .tabulator .tabulator-header .tabulator-col {
+    font-size: 10px;
     text-align:center;
+}
+.tabulator-cell {
+  font-size: 12px;
 }
 </style>
 </head>
@@ -109,7 +113,7 @@ function updateData() {
 
   // 車の最新情報をRESTで取得
   var headers = new Headers();
-  //headers.append('Authorization', 'Basic ' + btoa('SuperUser:driveuser'));
+  headers.append('Authorization', 'Basic ' + btoa('SuperUser:driveuser'));
   //headers.append('Content-Type', 'text/plain');
   fetch('http://localhost:52003/csp/DriveDemo/cars', { 
       method: 'GET',
