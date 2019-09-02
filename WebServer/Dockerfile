@@ -10,7 +10,7 @@ COPY server.js ./
 COPY main.html ./
 COPY apikey.txt ./
 
-RUN APIKEY=`cat apikey.txt` && sed -e "s/@@KEY@@/${APIKEY}/g" main.html > main-generated.html
+RUN APIKEY=`cat apikey.txt` && sed -e "s/@@KEY@@/${APIKEY}/g" -e "s///" main.html > main-generated.html
 
 EXPOSE 8080
 ENTRYPOINT [ "node", "server.js" ]
