@@ -15,12 +15,12 @@ import threading
 
 # MQTTブローカに接続した時のコールバック
 def on_connect(client, userdata, flag, rc):
-  print("Connected with result code " + str(rc))
+  print("Connected : code: " + str(rc))
 
 # MQTTブローカから切断した時のコールバック
 def on_disconnect(client, userdata, flag, rc):
   if rc != 0:
-     print("Unexpected disconnection.")
+     print("Disconnected")
 
 # MQTTブローカへのpublishが完了した時のコールバック
 def on_publish(client, userdata, mid):
