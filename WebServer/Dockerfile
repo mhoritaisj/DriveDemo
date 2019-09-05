@@ -6,11 +6,13 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 
-COPY server.js ./
-COPY main.html ./
-COPY apikey.txt ./
+COPY server.js main.html apikey.txt* ./
+#COPY main.html ./
+#COPY apikey.txt ./
 
-RUN APIKEY=`cat apikey.txt` && sed -e "s/@@KEY@@/${APIKEY}/g" -e "s///" main.html > main-generated.html
+RUN [ -f apikey.txt ] && \
+	APIKEY=`cat apikey.txt` && sed -e "s/@@KEY@@/${APIKEY}/g" -e "s///" main.html > main-generated.html || \
+	cp main.html main-generated.html
 
 EXPOSE 8080
 ENTRYPOINT [ "node", "server.js" ]
