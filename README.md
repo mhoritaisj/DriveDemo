@@ -1,7 +1,7 @@
 車載器に記録されたデータをMQTTで送信し、Google Map上に位置情報をリアルタイムでプロットし、速度やエンジン回転数、加速度などの情報を表示するデモアプリケーションです。
 
 このアプリケーションは、InterSystems IRIS Community Editionを利用しています。
-使用許諾（https://github.com/mhoritaisj/DriveDemo/blob/master/EULA_IRIS_Community.pdf）をご確認ください。
+使用許諾 (EULA_IRIS_Community.pdf) をご確認ください。
 
 
 # 実行方法
