@@ -14,7 +14,7 @@ services:
     #  args:
     #  - IRIS_PROJECT_FOLDER_NAME=bankingtrnsrv-atelier-project
     image: iris-jdk8
-    container_name: iris-drive-demo
+    container_name: iris-drive-play
     #command: --key /irislicense/iris.key
     hostname: irisdriveservice
     restart: on-failure
