@@ -1,6 +1,6 @@
 /// Drive Demo: REST APIの定義<br/>
 /// Business logic class defined by OpenAPI in DriveDemo.spec<br/>
-/// Updated Aug 6, 2019 17:14:18
+/// Updated Dec 20, 2019 16:53:15
 Class DriveDemo.impl Extends %REST.Impl [ ProcedureBlock ]
 {
 
