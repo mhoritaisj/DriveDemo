@@ -1,0 +1,53 @@
+version: '2.4'
+
+services:
+
+  irisdriveservice:
+    image: mhorita/iris-drive-play-a2:latest
+    container_name: iris-drive-play
+    hostname: irisdriveservice
+    restart: on-failure
+    ports:
+    - "51003:51773"
+    - "52003:52773"
+    volumes:
+    - ./IRIS-MQTT/projects:/projects
+                                             
+    networks:
+    - drivedemonw
+
+  mqttbroker:
+    #build: 
+    #  context: ./MQTTBroker
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    hostname: mqttbroker
+    restart: on-failure
+    expose:
+    - 1883
+    - 9001
+    ports:
+    - 1883:1883
+    - 9001:9001
+    volumes:
+    - ./MQTTBroker/conf:/mosquitto/config
+    #- ${PWD}/MQTTBroker/data:/mosquitto/data
+    #- ${PWD}/MQTTBroker/log:/mosquitto/log
+    networks:
+    - drivedemonw
+
+  webserver:
+    build:
+      context: ./WebServer
+    container_name: webserver
+    expose:
+    - 49160
+    ports:
+    - 49160:8080
+    networks:
+    - drivedemonw
+
+networks:
+  drivedemonw:
+    driver: bridge
+    name: drivedemonw
