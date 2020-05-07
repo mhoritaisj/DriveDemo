@@ -7,3 +7,4 @@ WebServer/node_modules/
 WebServer/apikey.txt
 Tools/
 MQTTConsumer/
+IRIS-MQTT/projects/PythonGateway/
