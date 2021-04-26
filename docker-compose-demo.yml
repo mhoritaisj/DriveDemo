@@ -41,9 +41,9 @@ services:
       context: ./WebServer
     container_name: webserver
     expose:
-    - 49160
+    - 59160
     ports:
-    - 49160:8080
+    - 59160:8080
     networks:
     - drivedemonw
 
