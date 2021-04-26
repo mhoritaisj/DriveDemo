@@ -1,4 +1,4 @@
-FROM python:3.7.4-alpine3.10
+FROM python:3.7.4
 
 ENV LANG ja_JP.UTF-8
 ENV LANGUAGE ja_JP:ja
