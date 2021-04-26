@@ -7,8 +7,7 @@
 # 実行方法
 1. 作業ディレクトリでファイル一式をpullします。
 
-  > git init
-  > git pull https://github.com/mhoritaisj/DriveDemo.git
+  > git clone https://github.com/mhoritaisj/DriveDemo.git
   
 2. Google Cloud Platform(GCP)の、Maps Javascript APIキーを取得し、WebServer/apikey.txt にテキストファイルとして保存します。
     （参考）GCP Webサイト： https://cloud.google.com/maps-platform/?apis=maps 
